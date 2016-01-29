@@ -1,5 +1,6 @@
 package com.toumlilt.gameoftrones;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,9 +13,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class GameActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private Player player;
+
+    public final static int PROFILE_REQUEST = 1;
+
+    public final static String EXTRA_USERNAME = "com.toumlilt.gameottrones.USERNAME";
+    public final static String EXTRA_USERDESC = "com.toumlilt.gameottrones.USERDESC";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +49,24 @@ public class GameActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        /*** Getting intent from SignUpActivity ***/
+        Intent intent = getIntent();
+        String message = intent.getStringExtra(SignUpActivity.EXTRA_MESSAGE);
+
+        /* creating player */
+        this.player = new Player(message, "");
+
+        /* nav_view */
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+
+        TextView usernameNavTV = (TextView) header.findViewById(R.id.usernameNavTextView);
+        usernameNavTV.setText(this.player.getUsername());
+
+        TextView userdescNavTV = (TextView) header.findViewById(R.id.userdescNavTextView);
+        userdescNavTV.setText(this.player.getUserdesc());
     }
 
     @Override
@@ -80,22 +107,45 @@ public class GameActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_profile) {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivityForResult(intent, PROFILE_REQUEST);
+        } else if (id == R.id.nav_map_view) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_weapons) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_share_realm) {
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == PROFILE_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                this.player.setUsername(data.getStringExtra(EXTRA_USERNAME));
+                this.player.setUserdesc(data.getStringExtra(EXTRA_USERDESC));
+                this.updateNavigationViewData();
+                System.out.println("------> " + player.getUsername() + "--" + player.getUserdesc());
+            }
+        }
+    }
+
+    private void updateNavigationViewData() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        View header = navigationView.getHeaderView(0);
+
+        TextView usernameNavTV = (TextView) header.findViewById(R.id.usernameNavTextView);
+        usernameNavTV.setText(this.player.getUsername());
+
+        TextView userdescNavTV = (TextView) header.findViewById(R.id.userdescNavTextView);
+        userdescNavTV.setText(this.player.getUserdesc());
     }
 }
