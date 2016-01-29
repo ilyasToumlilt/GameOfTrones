@@ -22,6 +22,11 @@ public class GameActivity extends AppCompatActivity
 
     private Player player;
 
+    public final static int PROFILE_REQUEST = 1;
+
+    public final static String EXTRA_USERNAME = "com.toumlilt.gameottrones.USERNAME";
+    public final static String EXTRA_USERDESC = "com.toumlilt.gameottrones.USERDESC";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +108,8 @@ public class GameActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivityForResult(intent, PROFILE_REQUEST);
         } else if (id == R.id.nav_map_view) {
 
         } else if (id == R.id.nav_weapons) {
@@ -115,5 +121,31 @@ public class GameActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == PROFILE_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                this.player.setUsername(data.getStringExtra(EXTRA_USERNAME));
+                this.player.setUserdesc(data.getStringExtra(EXTRA_USERDESC));
+                this.updateNavigationViewData();
+                System.out.println("------> " + player.getUsername() + "--" + player.getUserdesc());
+            }
+        }
+    }
+
+    private void updateNavigationViewData() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        View header = navigationView.getHeaderView(0);
+
+        TextView usernameNavTV = (TextView) header.findViewById(R.id.usernameNavTextView);
+        usernameNavTV.setText(this.player.getUsername());
+
+        TextView userdescNavTV = (TextView) header.findViewById(R.id.userdescNavTextView);
+        userdescNavTV.setText(this.player.getUserdesc());
     }
 }

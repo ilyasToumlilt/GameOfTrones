@@ -19,7 +19,8 @@
             android:name=".GameActivity"
             android:label="@string/title_activity_game"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".WeaponsActivity"></activity>
+        <activity android:name=".WeaponsActivity" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>

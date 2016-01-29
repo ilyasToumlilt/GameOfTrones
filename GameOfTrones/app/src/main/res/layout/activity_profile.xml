@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.toumlilt.gameoftrones.ProfileActivity"
+    android:background="#000000">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:weightSum="1">
+
+        <ImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="652dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            android:src="@android:drawable/sym_def_app_icon"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.46" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="41dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/profileUsername"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:background="#ffffff"
+            android:layout_alignParentEnd="true"
+            />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="41dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/profileUserdesc"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:background="#ffffff"
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Sauvegarder"
+            android:id="@+id/profileSaveButton"
+            android:onClick="onClickProfileSaveButton"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+</RelativeLayout>
