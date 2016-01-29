@@ -1,6 +1,7 @@
 package com.toumlilt.gameoftrones;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +22,10 @@ public class SignUpActivity extends AppCompatActivity {
 
         this.signUpButton = (Button) findViewById(R.id.signUpButton);
         this.signUpEditText = (EditText) findViewById(R.id.signUpEditText);
+
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.background_sound);
+        mediaPlayer.start();
+
     }
 
     public void onClickSignUpButton(View view) {
