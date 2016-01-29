@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_id": "gameoftrones-1205",
+    "project_number": "996557799788",
+    "name": "GameOfTrones"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996557799788:android:89337e5c7e70de93",
+        "client_id": "android:com.toumlilt.gameoftrones",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.toumlilt.gameoftrones"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "996557799788-hpq6lnjvcuek258f5631h12j5t93huj1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.toumlilt.gameoftrones",
+            "certificate_hash": "0E1D136388ACC7E85375D451C9DB2D5C81219ABF"
+          }
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
