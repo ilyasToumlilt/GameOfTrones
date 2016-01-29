@@ -6,6 +6,7 @@ package com.toumlilt.gameoftrones;
 public class Player {
 
     private String username;
+    private String userdesc;
 
     public String getUsername() {
         return this.username;
@@ -15,7 +16,16 @@ public class Player {
         this.username = (username.isEmpty()) ? "NoName" : username;
     }
 
-    public Player(String username) {
+    public String getUserdesc() {
+        return this.userdesc;
+    }
+
+    public void setUserdesc(String userdesc) {
+        this.userdesc = (userdesc.isEmpty()) ? "No Description" : userdesc;
+    }
+
+    public Player(String username, String userdesc) {
         this.setUsername(username);
+        this.setUserdesc(userdesc);
     }
 }

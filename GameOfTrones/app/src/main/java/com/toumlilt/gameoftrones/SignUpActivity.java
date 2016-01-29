@@ -12,8 +12,6 @@ public class SignUpActivity extends AppCompatActivity {
     private Button   signUpButton;
     private EditText signUpEditText;
 
-    public Player signUpPlayer;
-
     public final static String EXTRA_MESSAGE = "com.toumlilt.gameottrones.MESSAGE";
 
     @Override
@@ -28,7 +26,6 @@ public class SignUpActivity extends AppCompatActivity {
     public void onClickSignUpButton(View view) {
         // Do something in response to signUpButton
         Intent intent = new Intent(this, GameActivity.class);
-        signUpPlayer = new Player(signUpEditText.getText().toString());
         intent.putExtra(EXTRA_MESSAGE, signUpEditText.getText().toString());
         startActivity(intent);
     }

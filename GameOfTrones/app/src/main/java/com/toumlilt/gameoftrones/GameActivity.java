@@ -13,9 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class GameActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private Player player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +44,24 @@ public class GameActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
         /*** Getting intent from SignUpActivity ***/
         Intent intent = getIntent();
         String message = intent.getStringExtra(SignUpActivity.EXTRA_MESSAGE);
 
-        System.out.println("---->" + message);
+        /* creating player */
+        this.player = new Player(message, "");
+
+        /* nav_view */
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+
+        TextView usernameNavTV = (TextView) header.findViewById(R.id.usernameNavTextView);
+        usernameNavTV.setText(this.player.getUsername());
+
+        TextView userdescNavTV = (TextView) header.findViewById(R.id.userdescNavTextView);
+        userdescNavTV.setText(this.player.getUserdesc());
     }
 
     @Override
@@ -87,17 +102,13 @@ public class GameActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_profile) {
+            
+        } else if (id == R.id.nav_map_view) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_weapons) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_share_realm) {
 
         }
 
