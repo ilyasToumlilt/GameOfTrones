@@ -4,24 +4,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
 
-public class SaveSanitary extends SQLiteOpenHelper {
-
-    private static final String TAG = "SaveSanitary";
-
-    public static final String DATABASE_NAME = "ppm.db";
-    private static final int DATABASE_VERSION = 1;
+public class SanitaryHelper extends GotDbHelper {
 
     private static final String TABLE_SANITARY = "sanitary";
     private static final String COLUMN_LATITUDE = "latitude";
     private static final String COLUMN_LONGITUDE = "longitude";
     private static final String COLUMN_REMAINING_LIFE = "remaining_life";
 
-    private static final String DATABASE_CREATE =
+    private static final String SANITARY_CREATE =
             "CREATE TABLE IF NOT EXISTS " + TABLE_SANITARY + "(" +
                     COLUMN_LATITUDE + " REAL not null, " +
                     COLUMN_LONGITUDE + " REAL not null, " +
@@ -30,28 +24,28 @@ public class SaveSanitary extends SQLiteOpenHelper {
                     "ON CONFLICT IGNORE "+
                     ");";
 
-    private static final String DATABASE_DROP =
+    private static final String SANITARY_DROP =
             "DROP TABLE IF EXISTS " + TABLE_SANITARY;
     private static final String SANITARY_COUNT =
             "SELECT COUNT(*) FROM" + TABLE_SANITARY;
     private static final String SANITARY_ALL =
             "SELECT "+COLUMN_LATITUDE+ ", " + COLUMN_LONGITUDE + ", "+ COLUMN_REMAINING_LIFE + " "+
-                "FROM " + TABLE_SANITARY;
+                    "FROM " + TABLE_SANITARY;
 
-    public SaveSanitary(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public SanitaryHelper(Context context) {
+        super(context);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(TAG, DATABASE_CREATE);
-        db.execSQL(this.DATABASE_CREATE);
+        Log.d(super.TAG, SANITARY_CREATE);
+        db.execSQL(SANITARY_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(TAG, "De " + oldVersion + " vers " + newVersion);
-        db.execSQL(DATABASE_DROP);
+        Log.w(super.TAG, "De " + oldVersion + " vers " + newVersion);
+        db.execSQL(SANITARY_DROP);
         this.onCreate(db);
     }
 
@@ -93,6 +87,7 @@ public class SaveSanitary extends SQLiteOpenHelper {
             mAll.moveToNext();
         }
 
+        db.close();
         return sas;
     }
 
@@ -114,4 +109,6 @@ public class SaveSanitary extends SQLiteOpenHelper {
 
         return ret;
     }
+
+
 }
