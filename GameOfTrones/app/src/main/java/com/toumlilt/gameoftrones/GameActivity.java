@@ -68,7 +68,6 @@ public class GameActivity extends AppCompatActivity
     public final static String EXTRA_USERNAME = "com.toumlilt.gameottrones.USERNAME";
     public final static String EXTRA_USERDESC = "com.toumlilt.gameottrones.USERDESC";
 
-    //private GameMap gameMap;
     private MapFragment mMapFragment;
     private GoogleMap googleMap;
     private Location mCurrentLocation;
