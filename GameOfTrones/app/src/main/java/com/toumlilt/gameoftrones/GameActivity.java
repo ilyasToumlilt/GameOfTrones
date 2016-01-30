@@ -17,12 +17,11 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class GameActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private Player player;
 
@@ -31,8 +30,7 @@ public class GameActivity extends AppCompatActivity
     public final static String EXTRA_USERNAME = "com.toumlilt.gameottrones.USERNAME";
     public final static String EXTRA_USERDESC = "com.toumlilt.gameottrones.USERDESC";
 
-    private GoogleMap googleMap;
-
+    private GameMap gameMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +76,8 @@ public class GameActivity extends AppCompatActivity
         /* setting up map's fragment callback */
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        gameMap = new GameMap(mapFragment.getMap());
+        mapFragment.getMapAsync(this.gameMap);
         //googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //Marker TP = googleMap.addMarker(new MarkerOptions().
@@ -164,18 +163,4 @@ public class GameActivity extends AppCompatActivity
         userdescNavTV.setText(this.player.getUserdesc());
     }
 
-    /***********************************************************************************************
-     * Map control
-     **********************************************************************************************/
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        googleMap.addMarker(new MarkerOptions().
-                position(googleMap.getCameraPosition().target).title("TutorialsPoint"));
-    }
-
-    private void addSanisette(Sanitary sanitary) {
-        googleMap.addMarker(new MarkerOptions().
-                position(new LatLng(sanitary.getLatitude(), sanitary.getLongitude()))
-                .title("TutorialsPoint"));
-    }
 }
