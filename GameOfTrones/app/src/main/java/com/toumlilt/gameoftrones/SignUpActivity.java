@@ -37,9 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         /* testing if a user already exists */
         if(!sharedPreferences.getString(PREF_USERNAME, "").isEmpty()){
-            Intent intent = new Intent(this, GameActivity.class);
-            intent.putExtra(EXTRA_MESSAGE, sharedPreferences.getString(PREF_USERNAME, ""));
-            startActivity(intent);
+            this.startGameActivity();
         }
 
     }
@@ -53,8 +51,13 @@ public class SignUpActivity extends AppCompatActivity {
         editor.commit();
 
         /* starting game activity */
+        this.startGameActivity();
+    }
+
+    private void startGameActivity() {
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, signUpEditText.getText().toString());
+        intent.putExtra(EXTRA_MESSAGE, sharedPreferences.getString(PREF_USERNAME, ""));
+        intent.putExtra(GameActivity.EXTRA_USERDESC, sharedPreferences.getString(PREF_USERDESC, ""));
         startActivity(intent);
     }
 }

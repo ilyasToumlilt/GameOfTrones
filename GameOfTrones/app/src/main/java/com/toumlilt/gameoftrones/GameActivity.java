@@ -117,9 +117,10 @@ public class GameActivity extends AppCompatActivity
         /*** Getting intent from SignUpActivity ***/
         Intent intent = getIntent();
         String message = intent.getStringExtra(SignUpActivity.EXTRA_MESSAGE);
+        String desc_msg = intent.getStringExtra(this.EXTRA_USERDESC);
 
         /* creating player */
-        this.player = new Player(message, "");
+        this.player = new Player(message, desc_msg);
 
         /* nav_view */
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
