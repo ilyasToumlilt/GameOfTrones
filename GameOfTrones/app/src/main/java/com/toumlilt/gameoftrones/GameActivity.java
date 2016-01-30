@@ -1,11 +1,13 @@
 package com.toumlilt.gameoftrones;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -76,6 +78,8 @@ public class GameActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -413,6 +417,7 @@ public class GameActivity extends AppCompatActivity
 
     private void locationSetup() {
         this.googleMap.setMyLocationEnabled(true);
+        this.googleMap.getUiSettings().setMyLocationButtonEnabled(false);
         this.createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);
