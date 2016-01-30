@@ -2,7 +2,9 @@ package com.toumlilt.gameoftrones;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
@@ -10,6 +12,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -24,6 +27,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -38,7 +42,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class GameActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -48,6 +56,12 @@ public class GameActivity extends AppCompatActivity
         GoogleApiClient.OnConnectionFailedListener {
 
     private Player player;
+
+    private ArrayList<Sanitary> sanitaryList;
+    private ArrayList<Weapon> weaponList;
+    private SanitaryHelper sh;
+    private DownloadSanitary ds;
+    private Sanitary currentSanitary;
 
     public final static int PROFILE_REQUEST = 1;
 
@@ -71,9 +85,26 @@ public class GameActivity extends AppCompatActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View view)
+            {
+                if(currentSanitary == null)
+                {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "You must select a Sanitary first",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+                else {
+                    currentSanitary.setRemainingLife(
+                            currentSanitary.getRemainingLife() - getCurrentWeapon().getPv()
+                    );
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Sanitary hit !",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
             }
         });
 
@@ -120,8 +151,94 @@ public class GameActivity extends AppCompatActivity
             this.googleMap = mMapFragment.getMap();
             mMapFragment.getMapAsync(this);
 
+            this.googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    currentSanitary = getSanitaryFromLatLng(marker.getPosition());
+                    return false;
+                }
+            });
+
         }
+
+        this.ds = new DownloadSanitary();
+        this.sh = new SanitaryHelper(this);
+        this.initSanitaryList();
+        this.drawSanitaryList();
+        this.initWeaponList();
+        this.getCurrentWeapon();
     }
+
+    public Sanitary getSanitaryFromLatLng(LatLng l){
+        for (Sanitary s:this.sanitaryList)
+            if(s.getLatitude() == l.latitude && s.getLongitude() == l.longitude)
+                return s;
+        return null;
+    }
+
+    public Weapon getCurrentWeapon() {
+        int indCurWeapon;
+        Context c = getApplicationContext();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+        indCurWeapon = sp.getInt("ind_curr_weapon", 0);
+        Toast.makeText(
+                getApplicationContext(),
+                "SignUpActivity : " + indCurWeapon,
+                Toast.LENGTH_SHORT
+        ).show();
+        return this.weaponList.get(indCurWeapon);
+    }
+
+    private void initWeaponList() {
+        this.weaponList = new ArrayList<>();
+        this.weaponList.add(new DrawableWeapon("Gun", 5, 6, R.drawable.gun));
+        this.weaponList.add(new DrawableWeapon("Knife", 8, 2, R.drawable.knife));
+        this.weaponList.add(new DrawableWeapon("AK47", 8, 2, R.drawable.ak47));
+        this.weaponList.add(new DrawableWeapon("Sword", 8, 2, R.drawable.sword));
+        this.weaponList.add(new DrawableWeapon("Saber", 8, 2, R.drawable.saber));
+        this.weaponList.add(new DrawableWeapon("Trowel", 8, 2, R.drawable.trowel));
+    }
+
+    private boolean initSanitaryList()
+    {
+        ArrayList<Sanitary> tmp;
+
+        System.out.println("=====>" + this.sh.count());
+
+        if(this.sanitaryList == null)
+        {
+            if(this.sh.count() == 0)
+            {
+                try {
+                    tmp = this.ds.execute().get();
+
+                    for (Sanitary s:tmp){
+                        System.out.println("=====>" + s.getLatitude() + " "+s.getLongitude());
+                        this.sh.insert(s);
+                    }
+
+                    System.out.println("=====>" + this.sh.count());
+                }
+                catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    Toast.makeText(
+                            this,
+                            "Impossible to download sanitaries",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    return false;
+                }
+            }
+            this.sanitaryList = this.sh.getAll();
+        }
+        return true;
+    }
+
+    private void drawSanitaryList(){
+        for(Sanitary s : this.sanitaryList)
+            this.addSanitary(s);
+    }
+
 
     protected void onStart() {
         mGoogleApiClient.connect();
@@ -177,6 +294,9 @@ public class GameActivity extends AppCompatActivity
         } else if (id == R.id.nav_map_view) {
 
         } else if (id == R.id.nav_weapons) {
+            Intent iw = new Intent(this, WeaponsActivity.class);
+            iw.putExtra("weapons", this.weaponList);
+            startActivity(iw);
 
         } else if (id == R.id.nav_share_realm) {
 
@@ -220,6 +340,14 @@ public class GameActivity extends AppCompatActivity
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(500);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    public void addSanitary(Sanitary sanitary) {
+
+        googleMap.addMarker(new MarkerOptions().
+                position(new LatLng(sanitary.getLatitude(), sanitary.getLongitude()))
+                .title(sanitary.getRemainingLife() + "pdv"));
+
     }
 
     @Override

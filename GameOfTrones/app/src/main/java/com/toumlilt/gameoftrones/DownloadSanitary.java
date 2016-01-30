@@ -41,8 +41,8 @@ class DownloadSanitary extends AsyncTask<Void, String, ArrayList<Sanitary>> {
 
                 if(jsoGeom!= null)
                 {
-                    Double longitude = (Double)jsoGeom.get(0);
-                    Double latitude = (Double)jsoGeom.get(1);
+                    Double longitude = (Double)jsoGeom.get(1);
+                    Double latitude = (Double)jsoGeom.get(0);
                     als.add(new Sanitary(latitude, longitude));
                 }
             }
