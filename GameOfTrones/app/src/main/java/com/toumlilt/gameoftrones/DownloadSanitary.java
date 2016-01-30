@@ -37,17 +37,13 @@ class DownloadSanitary extends AsyncTask<Void, String, ArrayList<Sanitary>> {
 
             for (int i = 0; i < jsaRecords.length(); i++) {
                 JSONObject jsoFields = ((JSONObject) jsaRecords.get(i)).getJSONObject("fields");
-                JSONObject jsoGeom = jsoFields.getJSONObject("geom");
-                JSONArray jsoCoord = jsoGeom.getJSONArray("coordinates");
+                JSONArray jsoGeom = jsoFields.getJSONArray("geom_x_y");
 
-                for (int j = 0; j < jsoCoord.length(); j++) {
-                    JSONArray jsoCoord2 = (JSONArray) jsoCoord.get(j);
-                    for (int k = 0; k < jsoCoord2.length(); k++) {
-                        JSONArray jsoCoord3 = (JSONArray) jsoCoord2.get(k);
-                        Double longitude = (Double)jsoCoord3.get(0);
-                        Double latitude = (Double)jsoCoord3.get(1);
-                        als.add(new Sanitary(latitude, longitude));
-                    }
+                if(jsoGeom!= null)
+                {
+                    Double longitude = (Double)jsoGeom.get(0);
+                    Double latitude = (Double)jsoGeom.get(1);
+                    als.add(new Sanitary(latitude, longitude));
                 }
             }
         }
