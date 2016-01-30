@@ -19,10 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.w3c.dom.Text;
 
 public class GameActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -176,7 +173,7 @@ public class GameActivity extends AppCompatActivity
                 position(googleMap.getCameraPosition().target).title("TutorialsPoint"));
     }
 
-    private void addSanisette(Sanisette sanitary) {
+    private void addSanisette(Sanitary sanitary) {
         googleMap.addMarker(new MarkerOptions().
                 position(new LatLng(sanitary.getLatitude(), sanitary.getLongitude()))
                 .title("TutorialsPoint"));
