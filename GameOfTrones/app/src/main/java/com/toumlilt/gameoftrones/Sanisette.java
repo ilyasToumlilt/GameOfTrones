@@ -3,10 +3,18 @@ package com.toumlilt.gameoftrones;
 public class Sanisette {
     private Double latitude;
     private Double longitude;
+    private Integer remainingLife;
 
-    public Sanisette(Double latitude, Double longitude){
+    private final static Integer DEFAULT_REMAINING_LIFE = 10;
+
+    public Sanisette(Double latitude, Double longitude, Integer remainingLife){
         this.latitude = latitude;
         this.longitude = longitude;
+        this.remainingLife= remainingLife;
+    }
+
+    public Sanisette(Double latitude, Double longitude){
+        this(latitude, longitude, DEFAULT_REMAINING_LIFE);
     }
 
     public Double getLatitude() {
@@ -15,5 +23,17 @@ public class Sanisette {
 
     public Double getLongitude() {
         return longitude;
+    }
+
+    public Boolean isTaken() {
+        return remainingLife == 0;
+    }
+
+    public Integer getRemainingLife() {
+        return remainingLife;
+    }
+
+    public void setRemainingLife(Integer remainingLife) {
+        this.remainingLife = remainingLife;
     }
 }
