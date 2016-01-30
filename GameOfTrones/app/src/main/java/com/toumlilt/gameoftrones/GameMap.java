@@ -65,7 +65,7 @@ public class GameMap implements OnMapReadyCallback, LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println("HELLLLLLLLO");
+
     }
 
     @Override
