@@ -15,10 +15,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.w3c.dom.Text;
 
 public class GameActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private Player player;
 
@@ -26,6 +33,9 @@ public class GameActivity extends AppCompatActivity
 
     public final static String EXTRA_USERNAME = "com.toumlilt.gameottrones.USERNAME";
     public final static String EXTRA_USERDESC = "com.toumlilt.gameottrones.USERDESC";
+
+    private GoogleMap googleMap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +77,15 @@ public class GameActivity extends AppCompatActivity
 
         TextView userdescNavTV = (TextView) header.findViewById(R.id.userdescNavTextView);
         userdescNavTV.setText(this.player.getUserdesc());
+
+        /* setting up map's fragment callback */
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        //googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        //Marker TP = googleMap.addMarker(new MarkerOptions().
+        //        position(googleMap.getCameraPosition().target).title("TutorialsPoint"));
     }
 
     @Override
@@ -132,7 +151,6 @@ public class GameActivity extends AppCompatActivity
                 this.player.setUsername(data.getStringExtra(EXTRA_USERNAME));
                 this.player.setUserdesc(data.getStringExtra(EXTRA_USERDESC));
                 this.updateNavigationViewData();
-                System.out.println("------> " + player.getUsername() + "--" + player.getUserdesc());
             }
         }
     }
@@ -147,5 +165,20 @@ public class GameActivity extends AppCompatActivity
 
         TextView userdescNavTV = (TextView) header.findViewById(R.id.userdescNavTextView);
         userdescNavTV.setText(this.player.getUserdesc());
+    }
+
+    /***********************************************************************************************
+     * Map control
+     **********************************************************************************************/
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap.addMarker(new MarkerOptions().
+                position(googleMap.getCameraPosition().target).title("TutorialsPoint"));
+    }
+
+    private void addSanisette(Sanisette sanitary) {
+        googleMap.addMarker(new MarkerOptions().
+                position(new LatLng(sanitary.getLatitude(), sanitary.getLongitude()))
+                .title("TutorialsPoint"));
     }
 }
