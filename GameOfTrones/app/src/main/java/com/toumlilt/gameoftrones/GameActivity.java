@@ -38,6 +38,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -69,10 +70,11 @@ public class GameActivity extends AppCompatActivity
     /* Map attributes */
     private MapFragment mMapFragment;
     private GoogleMap googleMap;
-    private Location mCurrentLocation;
+    private Location mCurrentLocation = null;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private CircleOptions mCircleOptions;
+    private Circle mCurrentCircle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,26 +196,28 @@ public class GameActivity extends AppCompatActivity
 
     private void initWeaponList() {
         this.weaponList = new ArrayList<>();
-        this.weaponList.add(new DrawableWeapon("Gun", 5, 6, R.drawable.gun));
-        this.weaponList.add(new DrawableWeapon("Knife", 8, 2, R.drawable.knife));
-        this.weaponList.add(new DrawableWeapon("AK47", 8, 2, R.drawable.ak47));
-        this.weaponList.add(new DrawableWeapon("Sword", 8, 2, R.drawable.sword));
-        this.weaponList.add(new DrawableWeapon("Saber", 8, 2, R.drawable.saber));
-        this.weaponList.add(new DrawableWeapon("Trowel", 8, 2, R.drawable.trowel));
+        this.weaponList.add(new DrawableWeapon("Gun", 5, 10, R.drawable.gun));
+        this.weaponList.add(new DrawableWeapon("Knife", 8, 5, R.drawable.knife));
+        this.weaponList.add(new DrawableWeapon("AK47", 8, 15, R.drawable.ak47));
+        this.weaponList.add(new DrawableWeapon("Sword", 8, 10, R.drawable.sword));
+        this.weaponList.add(new DrawableWeapon("Saber", 8, 12, R.drawable.saber));
+        this.weaponList.add(new DrawableWeapon("Trowel", 8, 20, R.drawable.trowel));
     }
 
     private boolean initSanitaryList()
     {
         ArrayList<Sanitary> tmp;
-
+        System.out.println("--->" + this.sh.count());
         if(this.sanitaryList == null)
         {
             if(this.sh.count() == 0)
             {
+
                 try {
                     tmp = this.ds.execute().get();
 
                     for (Sanitary s:tmp){
+                        System.out.println("--->" + s.getLongitude());
                         this.sh.insert(s);
                     }
                 }
@@ -398,7 +402,11 @@ public class GameActivity extends AppCompatActivity
                     1);
             return;
          }
-        this.locationSetup();
+        if(this.mCurrentLocation == null)
+            this.locationSetup();
+        else
+            this.updateSettings();
+
     }
 
     @Override
@@ -433,8 +441,13 @@ public class GameActivity extends AppCompatActivity
                     .radius(100)
                     .strokeColor(Color.RED)
                     .fillColor(Color.argb(150, 168, 210, 224));
-            googleMap.addCircle(this.mCircleOptions);
+            this.mCurrentCircle = googleMap.addCircle(this.mCircleOptions);
+            System.out.println("---------<<<<<-------");
         }
+    }
+
+    private void updateSettings() {
+        this.updateCircleSettings();
     }
 
     @Override
@@ -447,7 +460,6 @@ public class GameActivity extends AppCompatActivity
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     this.locationSetup();
-
                 } else {
                     // TODO notif
                 }
@@ -457,7 +469,13 @@ public class GameActivity extends AppCompatActivity
         }
     }
 
-    private void updateCircleOptions() {
-
+    private void updateCircleSettings() {
+        this.mCurrentCircle.remove();
+        this.mCircleOptions = new CircleOptions()
+                .center(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
+                .radius(this.getCurrentWeapon().getScope()*10)
+                .strokeColor(Color.RED)
+                .fillColor(Color.argb(150, 168, 210, 224));
+        this.mCurrentCircle = googleMap.addCircle(this.mCircleOptions);
     }
 }
