@@ -164,6 +164,7 @@ public class GameActivity extends AppCompatActivity
 
         this.ds = new DownloadSanitary();
         this.sh = new SanitaryHelper(this);
+
         this.initSanitaryList();
         this.drawSanitaryList();
         this.initWeaponList();
@@ -204,8 +205,6 @@ public class GameActivity extends AppCompatActivity
     {
         ArrayList<Sanitary> tmp;
 
-        System.out.println("=====>" + this.sh.count());
-
         if(this.sanitaryList == null)
         {
             if(this.sh.count() == 0)
@@ -214,11 +213,8 @@ public class GameActivity extends AppCompatActivity
                     tmp = this.ds.execute().get();
 
                     for (Sanitary s:tmp){
-                        System.out.println("=====>" + s.getLatitude() + " "+s.getLongitude());
                         this.sh.insert(s);
                     }
-
-                    System.out.println("=====>" + this.sh.count());
                 }
                 catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();

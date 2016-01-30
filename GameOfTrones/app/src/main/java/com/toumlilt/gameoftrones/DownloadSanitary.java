@@ -12,11 +12,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.transform.Source;
 
 class DownloadSanitary extends AsyncTask<Void, String, ArrayList<Sanitary>> {
 
-    private String URL_SANITARY = "http://parisdata.opendatasoft.com/api/records/1.0/search/?dataset=sanisettesparis2011&facet=info&facet=libelle";
+    private String URL_SANITARY = "http://opendata.paris.fr/explore/dataset/sanisettesparis2011/download/?format=json&timezone=Europe/Berlin";
     private int HTTP_ALL_OKAY = 200;
 
     protected ArrayList<Sanitary> doInBackground(Void... unused)
@@ -32,22 +37,26 @@ class DownloadSanitary extends AsyncTask<Void, String, ArrayList<Sanitary>> {
 
             InputStream in = httpConn.getInputStream();
             BufferedReader bis = new BufferedReader(new InputStreamReader(in));
-            JSONObject myJson = new JSONObject(bis.readLine());
-            JSONArray jsaRecords = myJson.optJSONArray("records");
 
-            for (int i = 0; i < jsaRecords.length(); i++) {
-                JSONObject jsoFields = ((JSONObject) jsaRecords.get(i)).getJSONObject("fields");
-                JSONArray jsoGeom = jsoFields.getJSONArray("geom_x_y");
+            char[] buff = new char[2048];
+            Pattern p = Pattern.compile("geom_x_y\\\"\\:\\ \\[([0-9.]*)\\,\\ ([0-9.]*)");
+            Double lati;
+            Double longi;
 
-                if(jsoGeom!= null)
-                {
-                    Double longitude = (Double)jsoGeom.get(1);
-                    Double latitude = (Double)jsoGeom.get(0);
-                    als.add(new Sanitary(latitude, longitude));
+            while (bis.read(buff) != -1){
+                String s =String.valueOf(buff);
+                Matcher m = p.matcher(s);
+
+                if (m.find()) {
+                    try{
+                        lati = Double.parseDouble(m.group(1));
+                        longi = Double.parseDouble(m.group(2));
+                        als.add(new Sanitary(lati, longi));
+                    }catch (NumberFormatException e){}
                 }
             }
         }
-        catch (IOException|JSONException e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
         return als;
