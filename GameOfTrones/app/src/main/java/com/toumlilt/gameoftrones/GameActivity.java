@@ -465,7 +465,7 @@ public class GameActivity extends AppCompatActivity
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             this.mCircleOptions = new CircleOptions()
                     .center(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
-                    .radius(100)
+                    .radius(10 * getCurrentWeapon().getScope())
                     .strokeColor(Color.RED)
                     .fillColor(Color.argb(150, 168, 210, 224));
             this.mCurrentCircle = googleMap.addCircle(this.mCircleOptions);
