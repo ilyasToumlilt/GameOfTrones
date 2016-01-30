@@ -1,13 +1,11 @@
 package com.toumlilt.gameoftrones;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -37,6 +35,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -60,6 +60,7 @@ public class GameActivity extends AppCompatActivity
     private SanitaryHelper sh;
     private DownloadSanitary ds;
     private Sanitary currentSanitary;
+    private Marker currentMarker;
 
     public final static int PROFILE_REQUEST = 1;
 
@@ -84,7 +85,8 @@ public class GameActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View view)
             {
@@ -96,15 +98,40 @@ public class GameActivity extends AppCompatActivity
                             Toast.LENGTH_LONG
                     ).show();
                 }
-                else {
-                    currentSanitary.setRemainingLife(
-                            currentSanitary.getRemainingLife() - getCurrentWeapon().getPv()
-                    );
-                    Toast.makeText(
-                            getApplicationContext(),
-                            "Sanitary hit !",
-                            Toast.LENGTH_LONG
-                    ).show();
+                else
+                {
+                    Location sanLocation = new Location("sanitary");
+
+                    sanLocation.setLatitude(currentSanitary.getLatitude());
+                    sanLocation.setLongitude(currentSanitary.getLongitude());
+
+                    System.out.println("Distance : " + mCurrentLocation.distanceTo(sanLocation));
+
+                    if(mCurrentLocation.distanceTo(sanLocation) <= (getCurrentWeapon().getScope() * 10))
+                    {
+                        currentSanitary.setRemainingLife(
+                                currentSanitary.getRemainingLife() - getCurrentWeapon().getPv()
+                        );
+
+                        if (currentMarker != null) {
+                            currentMarker.remove();
+                        }
+
+                        addSanitary(currentSanitary, currentSanitary.getRemainingLife() == 0);
+
+                        Toast.makeText(
+                                getApplicationContext(),
+                                "Sanitary hit ! Remaining life : " + currentSanitary.getRemainingLife() ,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                    else{
+                        Toast.makeText(
+                                getApplicationContext(),
+                                "Too far away !",
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
                 }
             }
         });
@@ -156,11 +183,11 @@ public class GameActivity extends AppCompatActivity
             this.googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
+                    currentMarker = marker;
                     currentSanitary = getSanitaryFromLatLng(marker.getPosition());
                     return false;
                 }
             });
-
         }
 
         this.ds = new DownloadSanitary();
@@ -184,11 +211,6 @@ public class GameActivity extends AppCompatActivity
         Context c = getApplicationContext();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         indCurWeapon = sp.getInt("ind_curr_weapon", 0);
-        Toast.makeText(
-                getApplicationContext(),
-                "SignUpActivity : " + indCurWeapon,
-                Toast.LENGTH_SHORT
-        ).show();
         return this.weaponList.get(indCurWeapon);
     }
 
@@ -234,7 +256,7 @@ public class GameActivity extends AppCompatActivity
 
     private void drawSanitaryList(){
         for(Sanitary s : this.sanitaryList)
-            this.addSanitary(s);
+            this.addSanitary(s, false);
     }
 
 
@@ -345,12 +367,17 @@ public class GameActivity extends AppCompatActivity
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    public void addSanitary(Sanitary sanitary) {
+    public Marker addSanitary(Sanitary sanitary, Boolean isTaken)
+    {
+        BitmapDescriptor bdf = BitmapDescriptorFactory.defaultMarker(
+                isTaken?BitmapDescriptorFactory.HUE_ORANGE:BitmapDescriptorFactory.HUE_CYAN
+        );
 
-        googleMap.addMarker(new MarkerOptions().
+        return googleMap.addMarker(new MarkerOptions().
                 position(new LatLng(sanitary.getLatitude(), sanitary.getLongitude()))
-                .title(sanitary.getRemainingLife() + "pdv"));
-
+                .title(sanitary.getRemainingLife() + "pdv")
+                .icon(bdf)
+        );
     }
 
     @Override
