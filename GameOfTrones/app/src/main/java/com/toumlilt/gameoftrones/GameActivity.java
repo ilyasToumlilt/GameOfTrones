@@ -111,8 +111,10 @@ public class GameActivity extends AppCompatActivity
 
                     if(mCurrentLocation.distanceTo(sanLocation) <= (getCurrentWeapon().getScope() * 10))
                     {
+                        Integer newLife = currentSanitary.getRemainingLife() - getCurrentWeapon().getPv();
+
                         currentSanitary.setRemainingLife(
-                                currentSanitary.getRemainingLife() - getCurrentWeapon().getPv()
+                            newLife<0?0:newLife
                         );
 
                         if (currentMarker != null) {
