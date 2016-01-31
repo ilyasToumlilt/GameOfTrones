@@ -16,6 +16,8 @@ public class SignUpActivity extends AppCompatActivity {
     private Button   signUpButton;
     private EditText signUpEditText;
 
+    private static MediaPlayer mediaPlayer;
+
     private SharedPreferences sharedPreferences;
     public static final String USER_PREFS = "USERPREFS";
     public static final String PREF_USERNAME = "USERNAMEkey";
@@ -33,7 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
         this.signUpButton = (Button) findViewById(R.id.signUpButton);
         this.signUpEditText = (EditText) findViewById(R.id.signUpEditText);
 
-        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.background_sound);
+        mediaPlayer= MediaPlayer.create(this, R.raw.background_sound);
         mediaPlayer.start();
 
         this.sharedPreferences = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
