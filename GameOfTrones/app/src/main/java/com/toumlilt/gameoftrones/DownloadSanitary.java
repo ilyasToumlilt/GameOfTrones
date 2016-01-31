@@ -2,9 +2,7 @@ package com.toumlilt.gameoftrones;
 
 import android.os.AsyncTask;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.toumlilt.gameoftrones.model.Sanitary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,12 +10,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.transform.Source;
 
 /**
  * Tâche asynchrone pour télécharger et parser le JSON de sanisettes.

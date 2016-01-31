@@ -1,4 +1,4 @@
-package com.toumlilt.gameoftrones;
+package com.toumlilt.gameoftrones.model;
 
 import java.io.Serializable;
 

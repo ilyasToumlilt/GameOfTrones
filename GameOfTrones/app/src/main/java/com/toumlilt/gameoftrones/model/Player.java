@@ -1,4 +1,4 @@
-package com.toumlilt.gameoftrones;
+package com.toumlilt.gameoftrones.model;
 
 /**
  * Classe Modèle pout stocker les informations d'un joueur.

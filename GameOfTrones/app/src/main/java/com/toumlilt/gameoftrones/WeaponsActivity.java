@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.toumlilt.gameoftrones.model.DrawableWeapon;
+import com.toumlilt.gameoftrones.model.Weapon;
+
 import java.util.ArrayList;
 
 /**

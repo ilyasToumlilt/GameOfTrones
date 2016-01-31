@@ -1,4 +1,4 @@
-package com.toumlilt.gameoftrones;
+package com.toumlilt.gameoftrones.model;
 
 /**
  * Classe Modèle pour stocker les informations d'une Sanisette.

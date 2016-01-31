@@ -1,4 +1,4 @@
-package com.toumlilt.gameoftrones;
+package com.toumlilt.gameoftrones.model;
 
 /**
  * Classe Modèle pour enrichir un Weapon d'une image et l'afficher dans une ListView par exemple.

@@ -44,6 +44,10 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.toumlilt.gameoftrones.model.DrawableWeapon;
+import com.toumlilt.gameoftrones.model.Player;
+import com.toumlilt.gameoftrones.model.Sanitary;
+import com.toumlilt.gameoftrones.model.Weapon;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -620,9 +624,11 @@ public class GameActivity extends AppCompatActivity
                         // mise à jour du marker de la sanisette courante
                         // on le supprime puis on le réinsert
                         if (currentMarker != null) {
+                            // ne marche pas vraiment, copie
+                            // garder référence du addSanitary
                             currentMarker.remove();
                         }
-                        addSanitary(currentSanitary, currentSanitary.getRemainingLife() == 0);
+                        addSanitary(currentSanitary, newLife == 0);
                         sh.update(currentSanitary);
 
                         // on noritife l'utilisateur après l'attaque
