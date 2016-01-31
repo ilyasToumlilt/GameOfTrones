@@ -48,6 +48,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Activité principale de l'application,
+ * elle gère d'un côté l'affichage de la map et les événements qui y sont liés, et d'un autre
+ * côté le moteur du jeu et la relation entre le modèle, le chargement des données et leur
+ * affichage sur la map.
+ */
 public class GameActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
@@ -55,9 +61,18 @@ public class GameActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+    /**
+     * Le joueur actuel.
+     */
     private Player player;
 
+    /**
+     * Les sanisettes
+     */
     private ArrayList<Sanitary> sanitaryList;
+    /**
+     * Les armes
+     */
     private ArrayList<Weapon> weaponList;
     private GotDbHelper sh;
     private DownloadSanitary ds;
@@ -87,14 +102,17 @@ public class GameActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /* gestion du floating action button, qui représentera une attaque */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener()
         {
+            // événement click sur le bouton
             @Override
             public void onClick(View view)
             {
                 if(currentSanitary == null)
                 {
+                    // si aucune sanisette n'est sélectionnée, on blame le joueur
                     Snackbar.make(
                             view,
                             "You must select a Sanitary first",
@@ -103,39 +121,46 @@ public class GameActivity extends AppCompatActivity
                 }
                 else
                 {
-                    Location sanLocation = new Location("sanitary");
+                    // si une sanisette est sélectionnée, on doit l'attaquer :-)
 
+                    // on récupère la localisation de la sanisette sélectionnée
+                    Location sanLocation = new Location("sanitary");
                     sanLocation.setLatitude(currentSanitary.getLatitude());
                     sanLocation.setLongitude(currentSanitary.getLongitude());
 
-                    System.out.println("Distance : " + mCurrentLocation.distanceTo(sanLocation));
-
+                    // on attaque la sanisette si elle est dans notre portée d'attaque :
                     if(mCurrentLocation.distanceTo(sanLocation) <= (getCurrentWeapon().getScope() * 10))
                     {
+                        // une attaque se défini par une mise à jour des points de vie restants
+                        // de la sanisette courante
                         Integer newLife = currentSanitary.getRemainingLife() - getCurrentWeapon().getPv();
-
                         currentSanitary.setRemainingLife(
                                 newLife < 0 ? 0 : newLife
                         );
 
+                        // mise à jour du marker de la sanisette courante
+                        // on le supprime puis on le réinsert
                         if (currentMarker != null) {
                             currentMarker.remove();
                         }
-
                         addSanitary(currentSanitary, currentSanitary.getRemainingLife() == 0);
 
+                        // on noritife l'utilisateur après l'attaque
                         Snackbar.make(
                                 view,
                                 "Sanitary hit ! Remaining life: " + currentSanitary.getRemainingLife(),
                                 Snackbar.LENGTH_LONG
                         ).show();
 
+                        // avec un petit son, pour le bonus :-)
                         MediaPlayer.create(
                                 getApplicationContext(),
                                 R.raw.hit_sound
                         ).start();
                     }
                     else{
+                        // sinon si le marker de la sanisette ne se trouve pas dans notre portée d'attaque
+                        // on rappelle à l'ordre le vilain utilisateur :-)
                         Snackbar.make(
                                 view,
                                 "Too far away !",
@@ -146,13 +171,14 @@ public class GameActivity extends AppCompatActivity
             }
         });
 
+        /* DrawerLayout setup */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        /*** Getting intent from SignUpActivity ***/
+        /* Getting intent from SignUpActivity, with player info */
         Intent intent = getIntent();
         String message = intent.getStringExtra(SignUpActivity.EXTRA_MESSAGE);
         String desc_msg = intent.getStringExtra(this.EXTRA_USERDESC);
@@ -160,15 +186,14 @@ public class GameActivity extends AppCompatActivity
         /* creating player */
         this.player = new Player(message, desc_msg);
 
-        /* nav_view */
+        /* nav_view setup */
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        /* setting up player informations in the navigationView's headerView */
         View header = navigationView.getHeaderView(0);
-
         TextView usernameNavTV = (TextView) header.findViewById(R.id.usernameNavTextView);
         usernameNavTV.setText(this.player.getUsername());
-
         TextView userdescNavTV = (TextView) header.findViewById(R.id.userdescNavTextView);
         userdescNavTV.setText(this.player.getUserdesc());
 
@@ -176,23 +201,30 @@ public class GameActivity extends AppCompatActivity
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
 
         // Showing status
-        if (status != ConnectionResult.SUCCESS) { // Google Play Services are not available
+        if (status != ConnectionResult.SUCCESS) {
+            // Google Play Services are not available
+            System.out.println("ERROR: CONNECTION TO GOOGLE PLAY SERVICES FAILED");
 
-            System.out.println("CONNECTION FAILED");
-
-        } else { // Google Play Services are available
+        } else {
+            // Google Play Services are available
+            // so we can initialize our map services and view fragment
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
+            // map view fragment
             mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+            // i'll need a map reference
             this.googleMap = mMapFragment.getMap();
+            // setting listner
             mMapFragment.getMapAsync(this);
 
+            // marker's event responding
             this.googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
+                    // lors d'un click sur un marker on fait une simple mise à jour
                     currentMarker = marker;
                     currentSanitary = getSanitaryFromLatLng(marker.getPosition());
                     return false;
@@ -200,9 +232,11 @@ public class GameActivity extends AppCompatActivity
             });
         }
 
+        // Model constructing
         this.ds = new DownloadSanitary();
         this.sh = new GotDbHelper(this);
 
+        // some cool initial setup
         this.initSanitaryList();
         this.drawSanitaryList();
         this.initWeaponList();
@@ -279,11 +313,19 @@ public class GameActivity extends AppCompatActivity
     }
 
 
+    /**
+     * D'après la doc il est conseillé de faire le connect (resp. disconnect) au GoogleApiClient
+     * dans le onStart (resp. onStop)
+     */
     protected void onStart() {
         mGoogleApiClient.connect();
         super.onStart();
     }
 
+    /**
+     * D'après la doc il est conseillé de faire le connect (resp. disconnect) au GoogleApiClient
+     * dans le onStart (resp. onStop)
+     */
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
@@ -321,23 +363,28 @@ public class GameActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Gestion des selections dans la navigationView
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_profile) {
+        if (id == R.id.nav_profile) { // profileActivity
             Intent intent = new Intent(this, ProfileActivity.class);
             startActivityForResult(intent, PROFILE_REQUEST);
-        } else if (id == R.id.nav_map_view) {
+        } else if (id == R.id.nav_map_view) { // GameActivity ( current )
 
-        } else if (id == R.id.nav_weapons) {
+        } else if (id == R.id.nav_weapons) { // WeaponsActivity
             Intent iw = new Intent(this, WeaponsActivity.class);
             iw.putExtra("weapons", this.weaponList);
             startActivity(iw);
 
-        } else if (id == R.id.nav_share_realm) {
+        } else if (id == R.id.nav_share_realm) { // Not implemented
 
         }
 
@@ -346,24 +393,31 @@ public class GameActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Handling Activities that return's with a result.
+     * ( it'll be the case here for our ProfileActivity )
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == PROFILE_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
+            // result from profileActivity
+            if (resultCode == RESULT_OK) { // Make sure the request was successful
+                // getting result data
                 this.player.setUsername(data.getStringExtra(EXTRA_USERNAME));
                 this.player.setUserdesc(data.getStringExtra(EXTRA_USERDESC));
                 this.updateNavigationViewData();
-
-                //this.mCircleOptions.center(new LatLng(mCurrentLocation.getLatitude() + 5, mCurrentLocation.getLongitude()));
-
-                //googleMap.addCircle(this.mCircleOptions);
-                //System.out.println("HEYHEY<<----");
             }
         }
     }
 
+    /**
+     * Mise à jour des données utilisateur dans la NavigationView
+     * Les données sont récupérées depuis le Player Model
+     */
     private void updateNavigationViewData() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
@@ -379,6 +433,10 @@ public class GameActivity extends AppCompatActivity
     /***********************************************************************************************
      * Map
      **********************************************************************************************/
+
+    /**
+     * options relatives à la LocationREquest
+     */
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
@@ -401,15 +459,18 @@ public class GameActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        // j'active la localisation
         this.googleMap.setMyLocationEnabled(true);
-        //this.googleMap.addMarker(new MarkerOptions().
-        //        position(googleMap.getCameraPosition().target).title("TutorialsPoint"));
 
     }
 
+    /**
+     * Methode appelée à chaque changement de localisation
+     * Je repositionne la caméra pour que la location soit toujours centrée
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println("------> Location changed to " + location.toString());
         CameraPosition cameraPosition = new CameraPosition.Builder().target(
                 new LatLng(location.getLatitude(), location.getLongitude()))
                 .zoom(15).build();
@@ -432,20 +493,29 @@ public class GameActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Méthode appelée quand la connection aux APIs est établie
+     * @param bundle
+     */
     @Override
     public void onConnected(Bundle bundle) {
+        // vérification des permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
             System.out.println("--> PERMISSION OK");
         } else {
             System.out.println("--> PERMISSION KO");
+            // demande de permission de localisation si ce n'est pas encore fait
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
             return;
          }
+
+        // si aucune location n'existe on initialize les locations
         if(this.mCurrentLocation == null)
             this.locationSetup();
+        // sinon on m'est à jour l'existant
         else
             this.updateSettings();
 
@@ -461,23 +531,32 @@ public class GameActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Options relatives à l'initialisation de la localisation et des cartes
+     */
     private void locationSetup() {
+        // on active la localisation
         this.googleMap.setMyLocationEnabled(true);
+        // on vire le bouton de repositionement
         this.googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        // au début on va initialiser la position courante à la
+        // dernière position enregistrée ( getLastLocation() )
         this.createLocationRequest();
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);
-
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
         if(mCurrentLocation != null){
-            System.out.println("------>" + mCurrentLocation.toString());
+            // une fois la localisation courante initializée
+
+            // on centre la caméra dessus
             CameraPosition cameraPosition = new CameraPosition.Builder().target(
                     new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
                     .zoom(15).build();
-
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+            // puis on dessine le premier cercle d'attaque
             this.mCircleOptions = new CircleOptions()
                     .center(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
                     .radius(10 * getCurrentWeapon().getScope())
@@ -487,10 +566,19 @@ public class GameActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * à chaque refactoring on redessine le cercle
+     */
     private void updateSettings() {
         this.updateCircleSettings();
     }
 
+    /**
+     * Cette méthode est appelée lors d'une requête de demande de permissions
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -499,7 +587,8 @@ public class GameActivity extends AppCompatActivity
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                    // si la permission pour la localisation est acceptée
+                    // on initialise nos données de localisation
                     this.locationSetup();
                 } else {
                     // TODO notif
@@ -510,8 +599,14 @@ public class GameActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Méthode de mise à jour du cercle d'attaque
+     */
     private void updateCircleSettings() {
+        // on efface l'ancien cercle d'attaque
         this.mCurrentCircle.remove();
+        // puis on redessine un nouveau, centré sur la postion courante;
+        // avec un rayon de 10*la portée de l'arme courante.
         this.mCircleOptions = new CircleOptions()
                 .center(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
                 .radius(this.getCurrentWeapon().getScope()*10)
