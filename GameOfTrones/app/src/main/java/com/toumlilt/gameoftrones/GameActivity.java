@@ -240,18 +240,26 @@ public class GameActivity extends AppCompatActivity
                     tmp = this.ds.execute().get();
 
                     if(tmp==null){
-                        Snackbar.make(
+                        Snackbar sb = Snackbar.make(
                                 findViewById(R.id.fab),
                                 "Impossible de se connecter à http://opendata.paris.fr",
-                                Snackbar.LENGTH_LONG
-                        ).show();
-                        this.sanitaryList=new ArrayList<Sanitary>();
+                                Snackbar.LENGTH_INDEFINITE
+                        );
+
+                        View sbView = sb.getView();
+                        TextView textView = (TextView) sbView.findViewById(
+                                android.support.design.R.id.snackbar_text
+                        );
+                        textView.setTextColor(Color.RED);
+                        sb.show();
+
+                        this.sanitaryList=new ArrayList<>();
                         return false;
                     }
 
                     //Ajout à la BDD
                     for (Sanitary s:tmp){
-                        System.out.println("--->" + this.sh.insert(s));
+                        this.sh.insert(s);
                     }
                 }
                 catch (InterruptedException | ExecutionException e) {
