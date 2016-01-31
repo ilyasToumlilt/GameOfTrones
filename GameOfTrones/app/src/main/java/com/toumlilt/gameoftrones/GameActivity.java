@@ -275,7 +275,7 @@ public class GameActivity extends AppCompatActivity
 
     private void drawSanitaryList(){
         for(Sanitary s : this.sanitaryList)
-            this.addSanitary(s, false);
+            this.addSanitary(s, s.getRemainingLife() == 0);
     }
 
 
