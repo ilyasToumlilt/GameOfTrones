@@ -43,6 +43,7 @@ M2_PPM - Projet Android
    de ces deux entitées. D'un autre côté, elle s'occupera du moteur de jeu
    à savoir l'intéraction entre les événements utilisateur, et les données
    du jeu.
+   Les classes sont documentées ( en fran-glais :-x )
 
 == Difficultées rencontrées ==
 
