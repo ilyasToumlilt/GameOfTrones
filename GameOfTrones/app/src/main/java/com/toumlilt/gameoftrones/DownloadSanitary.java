@@ -58,6 +58,7 @@ class DownloadSanitary extends AsyncTask<Void, String, ArrayList<Sanitary>> {
         }
         catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
         return als;
     }

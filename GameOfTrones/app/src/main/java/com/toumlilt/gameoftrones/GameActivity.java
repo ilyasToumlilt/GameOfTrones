@@ -8,9 +8,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -23,7 +25,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -58,7 +59,7 @@ public class GameActivity extends AppCompatActivity
 
     private ArrayList<Sanitary> sanitaryList;
     private ArrayList<Weapon> weaponList;
-    private SanitaryHelper sh;
+    private GotDbHelper sh;
     private DownloadSanitary ds;
     private Sanitary currentSanitary;
     private Marker currentMarker;
@@ -94,10 +95,10 @@ public class GameActivity extends AppCompatActivity
             {
                 if(currentSanitary == null)
                 {
-                    Toast.makeText(
-                            getApplicationContext(),
+                    Snackbar.make(
+                            view,
                             "You must select a Sanitary first",
-                            Toast.LENGTH_LONG
+                            Snackbar.LENGTH_LONG
                     ).show();
                 }
                 else
@@ -114,7 +115,7 @@ public class GameActivity extends AppCompatActivity
                         Integer newLife = currentSanitary.getRemainingLife() - getCurrentWeapon().getPv();
 
                         currentSanitary.setRemainingLife(
-                            newLife<0?0:newLife
+                                newLife < 0 ? 0 : newLife
                         );
 
                         if (currentMarker != null) {
@@ -123,17 +124,22 @@ public class GameActivity extends AppCompatActivity
 
                         addSanitary(currentSanitary, currentSanitary.getRemainingLife() == 0);
 
-                        Toast.makeText(
-                                getApplicationContext(),
-                                "Sanitary hit ! Remaining life : " + currentSanitary.getRemainingLife() ,
-                                Toast.LENGTH_LONG
+                        Snackbar.make(
+                                view,
+                                "Sanitary hit ! Remaining life: " + currentSanitary.getRemainingLife(),
+                                Snackbar.LENGTH_LONG
                         ).show();
+
+                        MediaPlayer.create(
+                                getApplicationContext(),
+                                R.raw.hit_sound
+                        ).start();
                     }
                     else{
-                        Toast.makeText(
-                                getApplicationContext(),
+                        Snackbar.make(
+                                view,
                                 "Too far away !",
-                                Toast.LENGTH_LONG
+                                Snackbar.LENGTH_LONG
                         ).show();
                     }
                 }
@@ -195,7 +201,7 @@ public class GameActivity extends AppCompatActivity
         }
 
         this.ds = new DownloadSanitary();
-        this.sh = new SanitaryHelper(this);
+        this.sh = new GotDbHelper(this);
 
         this.initSanitaryList();
         this.drawSanitaryList();
@@ -231,7 +237,6 @@ public class GameActivity extends AppCompatActivity
     private boolean initSanitaryList()
     {
         ArrayList<Sanitary> tmp;
-        System.out.println("--->" + this.sh.count());
         if(this.sanitaryList == null)
         {
             if(this.sh.count() == 0)
@@ -240,22 +245,30 @@ public class GameActivity extends AppCompatActivity
                 try {
                     tmp = this.ds.execute().get();
 
+                    if(tmp==null){
+                        Snackbar.make(
+                                findViewById(R.id.fab),
+                                "Impossible de se connecter à http://opendata.paris.fr",
+                                Snackbar.LENGTH_LONG
+                        ).show();
+                    }
+
                     for (Sanitary s:tmp){
-                        System.out.println("--->" + s.getLongitude());
-                        this.sh.insert(s);
+                        System.out.println("--->" + this.sh.insert(s));
                     }
                 }
                 catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
-                    Toast.makeText(
-                            this,
-                            "Impossible to download sanitaries",
-                            Toast.LENGTH_LONG
+                    Snackbar.make(
+                            findViewById(R.id.fab),
+                            "Impossible to retrieve sanitaries",
+                            Snackbar.LENGTH_LONG
                     ).show();
                     return false;
                 }
             }
             this.sanitaryList = this.sh.getAll();
+            System.out.println("--->" + this.sh.count());
         }
         return true;
     }
