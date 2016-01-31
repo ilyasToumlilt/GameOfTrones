@@ -1,7 +1,7 @@
 package com.toumlilt.gameoftrones;
 
 /**
- * Classe Modèle pout stocker les informations d'une Sanisette.
+ * Classe Modèle pour stocker les informations d'une Sanisette.
  */
 public class Sanitary {
 
@@ -47,10 +47,6 @@ public class Sanitary {
 
     public Double getLongitude() {
         return longitude;
-    }
-
-    public Boolean isTaken() {
-        return remainingLife == 0;
     }
 
     public Integer getRemainingLife() {

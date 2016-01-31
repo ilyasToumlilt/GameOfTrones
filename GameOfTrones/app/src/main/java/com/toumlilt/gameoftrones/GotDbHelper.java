@@ -10,18 +10,29 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+/**
+ * Classe Controlleur pour le CRUD Sanitary
+ */
 public class GotDbHelper extends SQLiteOpenHelper {
 
     protected final String TAG = "GotDbHelper";
 
+    //Base de donnée
     public static final String DATABASE_NAME = "ppm.db";
     private static final int DATABASE_VERSION = 1;
 
+    //Noms des champs et de la table
     private static final String TABLE_SANITARY = "sanitary";
     private static final String COLUMN_LATITUDE = "latitude";
     private static final String COLUMN_LONGITUDE = "longitude";
     private static final String COLUMN_REMAINING_LIFE = "remaining_life";
 
+    /**
+     * Table Sanitary pour enregister les sanisettes.
+     * Latitude, longitude et vie restante.
+     * La clef primaire est composite sur (latitude, longitude).
+     * Les conflits ne sont pas insérés, ils sont ignorés.
+     * */
     private static final String SANITARY_CREATE =
             "CREATE TABLE IF NOT EXISTS " + TABLE_SANITARY + "(" +
                     COLUMN_LATITUDE + " REAL not null, " +
@@ -37,10 +48,12 @@ public class GotDbHelper extends SQLiteOpenHelper {
             "SELECT "+COLUMN_LATITUDE+ ", " + COLUMN_LONGITUDE + ", "+ COLUMN_REMAINING_LIFE + " "+
                     "FROM " + TABLE_SANITARY;
 
+    /***********************************************************************************************
+     * Constructors
+     **********************************************************************************************/
     public GotDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -55,10 +68,12 @@ public class GotDbHelper extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
+    /**
+     * Retourne le nombre de Sanitary dans la table
+     * */
     public long count(){
         SQLiteDatabase db;
-        Cursor mCount;
-        long count=0;
+        long count;
 
         db = this.getReadableDatabase();
         count  = DatabaseUtils.queryNumEntries(db, TABLE_SANITARY);
@@ -67,6 +82,10 @@ public class GotDbHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    /**
+     * Retourne tous les Sanitary.
+     * @return une collection de Sanitary
+     * */
     public ArrayList<Sanitary> getAll()
     {
         ArrayList<Sanitary> sas;
@@ -91,10 +110,16 @@ public class GotDbHelper extends SQLiteOpenHelper {
             mAll.moveToNext();
         }
 
+        mAll.close();
         db.close();
         return sas;
     }
 
+    /**
+     * Insert un nouveau Sanitary dans la table.
+     * Si un Sanitary avec une même longitude et longitude existe, on l'ignore.
+     * @return vrai si l'insertion a eu lieu, false sinon
+     * */
     boolean insert(Sanitary s)
     {
         ContentValues cv;
