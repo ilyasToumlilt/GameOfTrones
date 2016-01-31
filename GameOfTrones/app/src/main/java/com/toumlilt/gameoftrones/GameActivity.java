@@ -484,7 +484,6 @@ public class GameActivity extends AppCompatActivity
                     .strokeColor(Color.RED)
                     .fillColor(Color.argb(150, 168, 210, 224));
             this.mCurrentCircle = googleMap.addCircle(this.mCircleOptions);
-            System.out.println("---------<<<<<-------");
         }
     }
 

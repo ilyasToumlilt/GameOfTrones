@@ -1,13 +1,23 @@
 package com.toumlilt.gameoftrones;
 
 /**
- * Created by waye on 29/01/2016.
+ * Classe Modèle pout stocker les informations d'un joueur.
  */
 public class Player {
 
+    /**
+     * Pseudo du joueur
+     */
     private String username;
+
+    /**
+     * Statut du joueur
+     */
     private String userdesc;
 
+    /***********************************************************************************************
+     * Getters + Setters + Contructor
+     **********************************************************************************************/
     public String getUsername() {
         return this.username;
     }
