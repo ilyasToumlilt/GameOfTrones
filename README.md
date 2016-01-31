@@ -35,7 +35,10 @@ M2_PPM - Projet Android
    son status, et WeaponsActivity, qui permet de sélectionner une autre
    arme.
    Trois classes modèle sont également livrées, Weapon pour les armes,
-   Sanitary pour une sanisette, Player pour un joueur.
+   une arme est définie par son nom, le coût de ses dégats, et sa portée
+   d'attaque; Sanitary pour une sanisette, définie par ses coordonnées et les
+   points de vie qui lui restent; Player pour un joueur, défini par son
+   pseudo et son statut.
    Ainsi, la GameActivity va se charger, d'un côté de la gestion de la Map,
    à savoir catcher les événements, la localisation ( et toutes les 
    permission qui vont avec ), l'affichage des Marker pour Sanisettes, et
@@ -44,6 +47,7 @@ M2_PPM - Projet Android
    à savoir l'intéraction entre les événements utilisateur, et les données
    du jeu.
    Les classes sont documentées ( en fran-glais :-x )
+   //TODO persistence
 
 == Difficultées rencontrées ==
 

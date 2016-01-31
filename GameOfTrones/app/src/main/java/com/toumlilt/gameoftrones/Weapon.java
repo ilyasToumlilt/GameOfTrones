@@ -2,18 +2,39 @@ package com.toumlilt.gameoftrones;
 
 import java.io.Serializable;
 
-public class Weapon implements Serializable{
+/**
+ * Classe Modèle pout stocker les informations d'une arme.
+ */
+public class Weapon implements Serializable {
+
+    /**
+     * Nom de l'arme
+     */
     private String name;
+
+    /**
+     * Dégats de l'arme
+     */
     private Integer pv;
+
+    /**
+     * Portée d'attaque de l'arme
+     */
     private Integer scope;
 
 
+    /***********************************************************************************************
+     * Constructor
+     **********************************************************************************************/
     public Weapon(String name, Integer pv, Integer scope) {
         this.name = name;
         this.pv = pv;
         this.scope = scope;
     }
 
+    /***********************************************************************************************
+     * Getters + Setters
+     **********************************************************************************************/
     public String getName() {
         return name;
     }

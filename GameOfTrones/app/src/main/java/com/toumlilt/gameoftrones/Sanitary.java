@@ -1,12 +1,33 @@
 package com.toumlilt.gameoftrones;
 
+/**
+ * Classe Modèle pout stocker les informations d'une Sanisette.
+ */
 public class Sanitary {
+
+    /**
+     * Coordonnée latitude
+     */
     private Double latitude;
+
+    /**
+     * Coordonnée longitude
+     */
     private Double longitude;
+
+    /**
+     * Points de vie restants
+     */
     private Integer remainingLife;
 
+    /**
+     * Points de vie par defaut
+     */
     private final static Integer DEFAULT_REMAINING_LIFE = 10;
 
+    /***********************************************************************************************
+     * Constructors
+     **********************************************************************************************/
     public Sanitary(Double latitude, Double longitude, Integer remainingLife){
         this.latitude = latitude;
         this.longitude = longitude;
@@ -17,6 +38,9 @@ public class Sanitary {
         this(latitude, longitude, DEFAULT_REMAINING_LIFE);
     }
 
+    /***********************************************************************************************
+     * Getters + Setterss
+     **********************************************************************************************/
     public Double getLatitude() {
         return latitude;
     }
