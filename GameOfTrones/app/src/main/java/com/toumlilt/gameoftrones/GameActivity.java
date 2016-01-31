@@ -104,73 +104,7 @@ public class GameActivity extends AppCompatActivity
 
         /* gestion du floating action button, qui représentera une attaque */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            // événement click sur le bouton
-            @Override
-            public void onClick(View view)
-            {
-                if(currentSanitary == null)
-                {
-                    // si aucune sanisette n'est sélectionnée, on blame le joueur
-                    Snackbar.make(
-                            view,
-                            "You must select a Sanitary first",
-                            Snackbar.LENGTH_LONG
-                    ).show();
-                }
-                else
-                {
-                    // si une sanisette est sélectionnée, on doit l'attaquer :-)
-
-                    // on récupère la localisation de la sanisette sélectionnée
-                    Location sanLocation = new Location("sanitary");
-                    sanLocation.setLatitude(currentSanitary.getLatitude());
-                    sanLocation.setLongitude(currentSanitary.getLongitude());
-
-                    // on attaque la sanisette si elle est dans notre portée d'attaque :
-                    if(mCurrentLocation.distanceTo(sanLocation) <= (getCurrentWeapon().getScope() * 10))
-                    {
-                        // une attaque se défini par une mise à jour des points de vie restants
-                        // de la sanisette courante
-                        Integer newLife = currentSanitary.getRemainingLife() - getCurrentWeapon().getPv();
-                        currentSanitary.setRemainingLife(
-                                newLife < 0 ? 0 : newLife
-                        );
-
-                        // mise à jour du marker de la sanisette courante
-                        // on le supprime puis on le réinsert
-                        if (currentMarker != null) {
-                            currentMarker.remove();
-                        }
-                        addSanitary(currentSanitary, currentSanitary.getRemainingLife() == 0);
-                        sh.update(currentSanitary);
-
-                        // on noritife l'utilisateur après l'attaque
-                        Snackbar.make(
-                                view,
-                                "Sanitary hit ! Remaining life: " + currentSanitary.getRemainingLife(),
-                                Snackbar.LENGTH_LONG
-                        ).show();
-
-                        // avec un petit son, pour le bonus :-)
-                        MediaPlayer.create(
-                                getApplicationContext(),
-                                R.raw.hit_sound
-                        ).start();
-                    }
-                    else{
-                        // sinon si le marker de la sanisette ne se trouve pas dans notre portée d'attaque
-                        // on rappelle à l'ordre le vilain utilisateur :-)
-                        Snackbar.make(
-                                view,
-                                "Too far away !",
-                                Snackbar.LENGTH_LONG
-                        ).show();
-                    }
-                }
-            }
-        });
+        fab.setOnClickListener(new GameEngine());
 
         /* DrawerLayout setup */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -646,5 +580,82 @@ public class GameActivity extends AppCompatActivity
                 .strokeColor(Color.RED)
                 .fillColor(Color.argb(150, 168, 210, 224));
         this.mCurrentCircle = googleMap.addCircle(this.mCircleOptions);
+    }
+
+    public class GameEngine implements View.OnClickListener {
+
+        // événement click sur le bouton
+        @Override
+        public void onClick(View view)
+        {
+            if(currentSanitary == null)
+            {
+                // si aucune sanisette n'est sélectionnée, on blame le joueur
+                Snackbar.make(
+                        view,
+                        "You must select a Sanitary first",
+                        Snackbar.LENGTH_LONG
+                ).show();
+            }
+            else
+            {
+                // si une sanisette est sélectionnée, on doit l'attaquer :-)
+                // on récupère la localisation de la sanisette sélectionnée
+                Location sanLocation = new Location("sanitary");
+                sanLocation.setLatitude(currentSanitary.getLatitude());
+                sanLocation.setLongitude(currentSanitary.getLongitude());
+
+                // on attaque la sanisette si elle est dans notre portée d'attaque :
+                if(mCurrentLocation.distanceTo(sanLocation) <= (getCurrentWeapon().getScope() * 10))
+                {
+                    //et si elle est toujours vivante
+                    if(currentSanitary.getRemainingLife()>0) {
+                        // une attaque se défini par une mise à jour des points de vie restants
+                        // de la sanisette courante
+                        Integer newLife = currentSanitary.getRemainingLife() - getCurrentWeapon().getPv();
+                        currentSanitary.setRemainingLife(
+                                newLife < 0 ? 0 : newLife
+                        );
+
+                        // mise à jour du marker de la sanisette courante
+                        // on le supprime puis on le réinsert
+                        if (currentMarker != null) {
+                            currentMarker.remove();
+                        }
+                        addSanitary(currentSanitary, currentSanitary.getRemainingLife() == 0);
+                        sh.update(currentSanitary);
+
+                        // on noritife l'utilisateur après l'attaque
+                        Snackbar.make(
+                                view,
+                                "Sanitary hit ! Remaining life: " + currentSanitary.getRemainingLife(),
+                                Snackbar.LENGTH_LONG
+                        ).show();
+
+                        // avec un petit son, pour le bonus :-)
+                        MediaPlayer.create(
+                                getApplicationContext(),
+                                R.raw.hit_sound
+                        ).start();
+                    }
+                    else{
+                        Snackbar.make(
+                                view,
+                                "Already ours !",
+                                Snackbar.LENGTH_LONG
+                        ).show();
+                    }
+                }
+                else{
+                    // sinon si le marker de la sanisette ne se trouve pas dans notre portée d'attaque
+                    // on rappelle à l'ordre le vilain utilisateur :-)
+                    Snackbar.make(
+                            view,
+                            "Too far away !",
+                            Snackbar.LENGTH_LONG
+                    ).show();
+                }
+            }
+        }
     }
 }
