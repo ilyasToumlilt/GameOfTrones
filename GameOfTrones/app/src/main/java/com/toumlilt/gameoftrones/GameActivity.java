@@ -210,6 +210,9 @@ public class GameActivity extends AppCompatActivity
         this.getCurrentWeapon();
     }
 
+    /**
+     * Fait correspondre la latitude/longitude d'un marker à celle d'un Sanitary et le retourne.
+     * */
     public Sanitary getSanitaryFromLatLng(LatLng l){
         for (Sanitary s:this.sanitaryList)
             if(s.getLatitude() == l.latitude && s.getLongitude() == l.longitude)
@@ -217,6 +220,12 @@ public class GameActivity extends AppCompatActivity
         return null;
     }
 
+    /**
+     * Retourne l'arme courante de l'utilisateur.
+     * Par défault, c'est la première de la liste.
+     * La valeur est stockée dans une SharedPreference.
+     * Elle est mise-à-jour par la WeaponActivity par l'utilisateur.
+     * */
     public Weapon getCurrentWeapon() {
         int indCurWeapon;
         Context c = getApplicationContext();
@@ -225,6 +234,9 @@ public class GameActivity extends AppCompatActivity
         return this.weaponList.get(indCurWeapon);
     }
 
+    /**
+     * Valeurs en dur pour créer une liste d'arme.
+     * */
     private void initWeaponList() {
         this.weaponList = new ArrayList<>();
         this.weaponList.add(new DrawableWeapon("Gun", 5, 10, R.drawable.gun));
@@ -235,15 +247,24 @@ public class GameActivity extends AppCompatActivity
         this.weaponList.add(new DrawableWeapon("Trowel", 8, 20, R.drawable.trowel));
     }
 
+    /**
+     * Met les sanisettes de la BDD en mémoire.
+     * Si la BDD ne contient aucune sanisette :
+     *      - On récupère la liste à partir du JSON en ligne
+     *      - On ajoute cette liste dans la BDD
+     *      - On la garde la liste en mémoire
+     * */
     private boolean initSanitaryList()
     {
         ArrayList<Sanitary> tmp;
+
         if(this.sanitaryList == null)
         {
+            //BDD vide ?
             if(this.sh.count() == 0)
             {
-
                 try {
+                    //Récupère JSON en ligne
                     tmp = this.ds.execute().get();
 
                     if(tmp==null){
@@ -254,6 +275,7 @@ public class GameActivity extends AppCompatActivity
                         ).show();
                     }
 
+                    //Ajout à la BDD
                     for (Sanitary s:tmp){
                         System.out.println("--->" + this.sh.insert(s));
                     }
@@ -268,12 +290,16 @@ public class GameActivity extends AppCompatActivity
                     return false;
                 }
             }
+            //Garde la liste en mémoire
             this.sanitaryList = this.sh.getAll();
             System.out.println("--->" + this.sh.count());
         }
         return true;
     }
 
+    /**
+     * Ajoute un marqueur par sanisette.
+     * */
     private void drawSanitaryList(){
         for(Sanitary s : this.sanitaryList)
             this.addSanitary(s, s.getRemainingLife() == 0);
@@ -387,6 +413,12 @@ public class GameActivity extends AppCompatActivity
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    /**
+     * Ajoute un marker à la carte.
+     * La couleur du marqueur est différente si la sanisette est prise ou pas.
+     * @param sanitary : le Sanitary représenté par le marker
+     * @param isTaken : la vie du Sanitary est elle égale à zéro.
+     * */
     public Marker addSanitary(Sanitary sanitary, Boolean isTaken)
     {
         BitmapDescriptor bdf = BitmapDescriptorFactory.defaultMarker(
