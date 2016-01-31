@@ -61,4 +61,5 @@ M2_PPM - Projet Android
    La réalisation du projet nous a pris deux jours de travail, dont une bonne
    partie a été consacrée à l'affichage de la map et la connexion aux Google
    Play Services, et aux fetching des resources depuis la base ( URL fourni )
+   
    Le projet a été testé et fonctionne sur le Nexus 7.
