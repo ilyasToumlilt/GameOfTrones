@@ -245,6 +245,8 @@ public class GameActivity extends AppCompatActivity
                                 "Impossible de se connecter à http://opendata.paris.fr",
                                 Snackbar.LENGTH_LONG
                         ).show();
+                        this.sanitaryList=new ArrayList<Sanitary>();
+                        return false;
                     }
 
                     //Ajout à la BDD
