@@ -638,7 +638,7 @@ public class GameActivity extends AppCompatActivity
                             // garder référence du addSanitary
                             currentMarker.remove();
                         }
-                        addSanitary(currentSanitary, newLife == 0);
+                        addSanitary(currentSanitary, currentSanitary.getRemainingLife()== 0);
                         sh.update(currentSanitary);
 
                         // on noritife l'utilisateur après l'attaque
