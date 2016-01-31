@@ -120,7 +120,7 @@ public class GotDbHelper extends SQLiteOpenHelper {
      * Si un Sanitary avec une même longitude et longitude existe, on l'ignore.
      * @return vrai si l'insertion a eu lieu, false sinon
      * */
-    boolean insert(Sanitary s)
+    public boolean insert(Sanitary s)
     {
         ContentValues cv;
         SQLiteDatabase db;
@@ -137,5 +137,23 @@ public class GotDbHelper extends SQLiteOpenHelper {
         db.close();
 
         return ret;
+    }
+
+    /**
+     * Met-à-jour la vie restante du Sanitary frappé.
+     * */
+    public void update(Sanitary s){
+        ContentValues cv;
+        SQLiteDatabase db;
+
+        db =  this.getWritableDatabase();
+        cv = new ContentValues();
+        cv.put(COLUMN_REMAINING_LIFE, s.getRemainingLife());
+        db.update(
+                TABLE_SANITARY,
+                cv,
+                COLUMN_LATITUDE + "=? " + " AND " + COLUMN_LONGITUDE + " =? ",
+                new String[]{String.valueOf(s.getLatitude()), String.valueOf(s.getLongitude())}
+        );
     }
 }

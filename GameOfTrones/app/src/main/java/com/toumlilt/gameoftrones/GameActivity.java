@@ -123,6 +123,7 @@ public class GameActivity extends AppCompatActivity
                         }
 
                         addSanitary(currentSanitary, currentSanitary.getRemainingLife() == 0);
+                        sh.update(currentSanitary);
 
                         Snackbar.make(
                                 view,
